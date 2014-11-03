@@ -5,6 +5,7 @@ import akka.event.LoggingReceive
 
 class Seller(items: List[String]) extends Actor {
   
+	println("Auctionsearch:" + context.actorSelection("../auctionSearch"))
 	items.foreach(context.actorSelection("../auctionSearch") ! CreateAuction(_)) 
   
 	def receive = LoggingReceive {

@@ -26,7 +26,7 @@ class AuctionHouse extends Actor {
     _.split(" ")
   }
   
-  val buyers = for( i <- List.range(0, 5)) yield context.actorOf(Props(classOf[Buyer], possibleKeywords), "buyer" + (i+1)) 
+  val buyers = for( i <- List.range(0, 1)) yield context.actorOf(Props(classOf[Buyer], possibleKeywords), "buyer" + (i+1)) 
   
   buyers.map(_ ! BidRandomAuction)
   

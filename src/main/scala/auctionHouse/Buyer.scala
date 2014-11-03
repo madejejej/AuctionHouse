@@ -11,6 +11,7 @@ class Buyer(keywords: List[String]) extends Actor {
 	    println("Woohoo! I won an item!")
 	  case BidRandomAuction =>
 	    var keyword = keywords(Random.nextInt(keywords.length))
+	    println("Bidding auction for keyword " + keyword)
 	    context.actorSelection("../auctionSearch") ! SearchForKeyword(keyword)
 	  case MatchingAuctions(auctions) =>
 	    var auction = auctions(Random.nextInt(auctions.length))
