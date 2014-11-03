@@ -9,14 +9,17 @@ import akka.actor.ActorRef
 class AuctionSearch extends Actor {
 	var auctions: Vector[(String, ActorRef)] = Vector.empty
 	var auctionNames: Vector[String] = Vector.empty
+	var totalAuctions: Integer = 0
 	
 	def receive = LoggingReceive {
 	  case CreateAuction(item) =>
-	    var auction: ActorRef = context.actorOf(Props[Auction], "auction_" + item) 
+	    var auction: ActorRef = context.actorOf(Props[Auction], "auction_" + (totalAuctions))
+	    totalAuctions = totalAuctions + 1
 	    auctions = auctions :+ (item, auction)
+	    println("AuctionSearch registered auction " + item)
 	    auction ! Start(BidTimer(8))
 	  case SearchForKeyword(keyword) =>
-	    var matchedAuctions: Vector[ActorRef] = auctions.filter(_._1.matches(keyword)).map { _._2}
+	    var matchedAuctions: Vector[ActorRef] = auctions.filter(_._1.split(" ").contains(keyword)).map { _._2}
 	    sender ! MatchingAuctions(matchedAuctions)
 	}
 }
