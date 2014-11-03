@@ -7,9 +7,7 @@ import akka.event.LoggingReceive
 import scala.concurrent.duration.Duration
 
 class AuctionHouse extends Actor {
-  val auctions = for( i <- List.range(0, 3)) yield context.actorOf(Props[Auction], "auction" + (i+1)) 
-  
-  val buyers = for( i <- List.range(0, 5)) yield context.actorOf(Props(classOf[Buyer], auctions), "buyer" + (i+1)) 
+  val auctionSearch = context.actorOf(Props(classOf[AuctionSearch]), "auctionSearch")
   
   val sellerItems = List( 
       List("Audi A6 Diesel Manual", "Estimote beacons", "AGH KI Private Key"),
@@ -28,7 +26,7 @@ class AuctionHouse extends Actor {
     _.split(" ")
   }
   
-  auctions.map(_ ! Start(BidTimer(8)))
+  val buyers = for( i <- List.range(0, 5)) yield context.actorOf(Props(classOf[Buyer], possibleKeywords), "buyer" + (i+1)) 
   
   buyers.map(_ ! BidRandomAuction)
   
