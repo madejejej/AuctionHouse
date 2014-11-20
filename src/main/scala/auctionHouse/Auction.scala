@@ -1,12 +1,12 @@
 package auctionHouse
 
-import akka.actor.Actor
-import akka.actor.FSM
+import scala.PartialFunction._
 import scala.collection._
 import scala.concurrent.duration._
-import akka.actor.Props
+
+import akka.actor.Actor
 import akka.actor.ActorRef
-import PartialFunction._
+import akka.actor.FSM
 
 sealed trait State
 case object NewAuction extends State
@@ -16,7 +16,7 @@ case object Ignored extends State
 case object Sold extends State
 
 sealed trait Data
-case class BidTimer(auctionLength: Int) extends Data
+case class BidTimer(auctionLength: FiniteDuration) extends Data
 
 class Auction extends Actor with FSM[State, Data] {
   val SECONDS_TO_DELETE = 3 seconds
@@ -24,7 +24,7 @@ class Auction extends Actor with FSM[State, Data] {
   var currentBid: Integer = 0
   var bidder: ActorRef = null
   var creator: ActorRef = null
-  var auctionLength: Int = 3;
+  var auctionLength = 3 seconds;
 
   startWith(NewAuction, null)
   
@@ -79,7 +79,7 @@ class Auction extends Actor with FSM[State, Data] {
   
   onTransition {
     case NewAuction -> Created =>
-      setTimer("auctionCreatedEnds", BidTimerExpired, auctionLength seconds, false)
+      setTimer("auctionCreatedEnds", BidTimerExpired, auctionLength, false)
     case Created -> Ignored =>
       setTimer("deleteAuction", DeleteTimerExpired, SECONDS_TO_DELETE, false)
     case Activated -> Sold =>
